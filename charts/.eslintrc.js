@@ -43,5 +43,6 @@ module.exports = {
           endOfLine: 'auto',
         },
       ],
+      'import/prefer-default-export': 'off',
     },
   };

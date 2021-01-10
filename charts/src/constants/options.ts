@@ -3,7 +3,7 @@ import { Charts, FieldNames } from '../enums/dataset';
 export const chartOptions = [
   {
     label: 'Pie Chart',
-    value: Charts.Pie,
+    value: Charts.PieChart,
   },
 ];
 

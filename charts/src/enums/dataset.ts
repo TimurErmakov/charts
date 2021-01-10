@@ -17,5 +17,6 @@ export enum FieldNames {
 }
 
 export enum Charts {
-  Pie = 'Pie',
+  PieChart = 'PieChart',
+  XYChart = 'XYChart',
 }

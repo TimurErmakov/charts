@@ -12,7 +12,10 @@ import React, {
 import PublishIcon from '@material-ui/icons/Publish';
 import csvToJson from 'csvtojson';
 import { makeStyles } from '@material-ui/core/styles';
+import { useDispatch } from 'react-redux';
 import { FieldNames } from '../../enums/dataset';
+import { setData, setIsDataLoaded } from '../../store/actions';
+import { DataModel } from '../../types/store';
 
 interface UseStylesProps {
   isDragEnter?: boolean;
@@ -78,6 +81,7 @@ const useStyles = makeStyles(theme => ({
 
 const FileUploadZone: FC = () => {
   const classes = useStyles({});
+  const dispatch = useDispatch();
 
   const [open, setOpen] = useState(true);
   const [isDragEnter, setIsDragEnter] = useState(false);
@@ -173,14 +177,15 @@ const FileUploadZone: FC = () => {
           trim: true,
         })
           .fromString(text.replace(/[ ]+/g, ','))
-          .then((jsonObj: any) => {
-            console.log(jsonObj);
+          .then((data: DataModel[]) => {
+            dispatch(setData(data.slice(0, 1000)));
+            dispatch(setIsDataLoaded(true));
           });
       };
 
       reader.readAsText(file);
     },
-    [file],
+    [file, dispatch],
   );
 
   const onPreventClick = (e: MouseEvent<HTMLDivElement>) => {
