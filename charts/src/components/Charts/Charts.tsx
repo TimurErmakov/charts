@@ -19,7 +19,7 @@ const Charts: FC = () => {
     const chart = am4core.create('chartdiv', am4charts.PieChart);
 
     const parsedData = parseData(fieldName, data);
-    console.log({ parsedData });
+
     chart.data = parseData(fieldName, data);
 
     const series = chart.series.push(new am4charts.PieSeries());
