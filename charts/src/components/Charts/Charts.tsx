@@ -4,7 +4,7 @@ import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
 import am4themes_animated from '@amcharts/amcharts4/themes/animated';
 import { selectChartType, selectData, selectFieldName } from '../../store/selectors';
-import { parseData } from '../../utils/dictionary';
+import { getData } from '../../utils/dictionary';
 
 am4core.useTheme(am4themes_animated);
 
@@ -16,11 +16,15 @@ const Charts: FC = () => {
   const chartRef = useRef<am4charts.PieChart | null>(null);
 
   useLayoutEffect(() => {
+    if (!fieldName) {
+      return;
+    }
+
     const chart = am4core.create('chartdiv', am4charts.PieChart);
 
-    const parsedData = parseData(fieldName, data);
+    const parsedData = getData(data, fieldName);
 
-    chart.data = parseData(fieldName, data);
+    chart.data = parsedData;
 
     const series = chart.series.push(new am4charts.PieSeries());
     series.dataFields.value = 'value';
@@ -28,6 +32,7 @@ const Charts: FC = () => {
 
     chartRef.current = chart;
 
+    // eslint-disable-next-line consistent-return
     return () => {
       chart.dispose();
     };
