@@ -32,36 +32,36 @@ export const fieldNameOptions = [
     label: 'Loan-to-Value Ratio',
     value: FieldNames.LTV,
   },
-  // {
-  //   label: 'Purpose Of Loan',
-  //   value: FieldNames.PurposeOfLoan,
-  // },
-  // {
-  //   label: 'Federal Guarantee',
-  //   value: FieldNames.FederalGuarantee,
-  // },
-  // {
-  //   label: 'Borrower Race',
-  //   value: FieldNames.BorrowerRace,
-  // },
-  // {
-  //   label: 'Co-Borrower Race',
-  //   value: FieldNames.CoBorrowerRace,
-  // },
-  // {
-  //   label: 'Borrower Gender',
-  //   value: FieldNames.BorrowerGender,
-  // },
-  // {
-  //   label: 'Co-Borrower Gender',
-  //   value: FieldNames.CoBorrowerGender,
-  // },
-  // {
-  //   label: 'Number Of Units',
-  //   value: FieldNames.NumberOfUnits,
-  // },
-  // {
-  //   label: 'Unit Affordability Category',
-  //   value: FieldNames.UnitAffordabilityCategory,
-  // },
+  {
+    label: 'Purpose Of Loan',
+    value: FieldNames.PurposeOfLoan,
+  },
+  {
+    label: 'Federal Guarantee',
+    value: FieldNames.FederalGuarantee,
+  },
+  {
+    label: 'Borrower Race',
+    value: FieldNames.BorrowerRace,
+  },
+  {
+    label: 'Co-Borrower Race',
+    value: FieldNames.CoBorrowerRace,
+  },
+  {
+    label: 'Borrower Gender',
+    value: FieldNames.BorrowerGender,
+  },
+  {
+    label: 'Co-Borrower Gender',
+    value: FieldNames.CoBorrowerGender,
+  },
+  {
+    label: 'Number Of Units',
+    value: FieldNames.NumberOfUnits,
+  },
+  {
+    label: 'Unit Affordability Category',
+    value: FieldNames.UnitAffordabilityCategory,
+  },
 ];

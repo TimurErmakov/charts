@@ -10,12 +10,14 @@ import React, {
   MouseEvent,
 } from 'react';
 import PublishIcon from '@material-ui/icons/Publish';
-import csvToJson from 'csvtojson';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
 import { FieldNames } from '../../enums/dataset';
 import { setData, setIsDataLoaded } from '../../store/actions';
-import { DataModel } from '../../types/store';
+
+type DataEntity = {
+  [key in FieldNames]: string;
+};
 
 interface UseStylesProps {
   isDragEnter?: boolean;
@@ -170,17 +172,26 @@ const FileUploadZone: FC = () => {
       reader.onload = async (e: any) => {
         const text = e.target.result;
 
-        csvToJson({
-          headers: Object.keys(FieldNames),
-          noheader: true,
-          ignoreEmpty: true,
-          trim: true,
-        })
-          .fromString(text.replace(/[ ]+/g, ','))
-          .then((data: DataModel[]) => {
-            dispatch(setData(data.slice(0, 1000)));
-            dispatch(setIsDataLoaded(true));
-          });
+        const headers = Object.keys(FieldNames);
+        const data = text.split('\n').reduce((accArr: DataEntity[], record: string) => {
+          const values = record.split(/\s+/);
+          values.pop();
+
+          const dataObj: DataEntity = values.reduce(
+            (accObj, value: string, index: number) => ({
+              ...accObj,
+              [headers[index]]: value,
+            }),
+            {} as DataEntity,
+          );
+
+          accArr.push(dataObj);
+
+          return accArr;
+        }, []);
+
+        dispatch(setData(data.slice(0, 1000)));
+        dispatch(setIsDataLoaded(true));
       };
 
       reader.readAsText(file);

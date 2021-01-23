@@ -1,18 +1,19 @@
 import React, { FC, useRef, useLayoutEffect } from 'react';
-import { useSelector } from 'react-redux';
 import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
 import am4themes_animated from '@amcharts/amcharts4/themes/animated';
-import { selectChartType, selectData, selectFieldName } from '../../store/selectors';
-import { getData } from '../../utils/dictionary';
+import { DataModel } from '../../../types/store';
+import { FieldNames } from '../../../enums/dataset';
+import { getData } from '../../../utils/dictionary';
 
 am4core.useTheme(am4themes_animated);
 
-const Charts: FC = () => {
-  const data = useSelector(selectData)!;
-  const fieldName = useSelector(selectFieldName)!;
-  const chartType = useSelector(selectChartType)!;
+interface ChartProps {
+  data: DataModel[];
+  fieldName: FieldNames;
+}
 
+const PieChart: FC<ChartProps> = ({ data, fieldName }) => {
   const chartRef = useRef<am4charts.PieChart | null>(null);
 
   useLayoutEffect(() => {
@@ -32,7 +33,6 @@ const Charts: FC = () => {
 
     chartRef.current = chart;
 
-    // eslint-disable-next-line consistent-return
     return () => {
       chart.dispose();
     };
@@ -41,4 +41,4 @@ const Charts: FC = () => {
   return <div id="chartdiv" style={{ width: '100%', height: '500px' }} />;
 };
 
-export default Charts;
+export default PieChart;

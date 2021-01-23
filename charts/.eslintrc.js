@@ -37,6 +37,10 @@ module.exports = {
     ],
     rules: {
       'linebreak-style': 'off',
+      'react/prop-types': 'off',
+      'react/jsx-props-no-spreading': 'off',
+      'no-non-null-assertion': 'off',
+      'consistent-return': 'off',
       'prettier/prettier': [
         'error',
         {
