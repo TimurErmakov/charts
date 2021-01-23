@@ -11,6 +11,8 @@ const useStyles = makeStyles(() => ({
   },
   selectContainer: {
     display: 'flex',
+    marginBottom: 50,
+    justifyContent: 'center',
   },
   select: {
     width: 300,

@@ -5,6 +5,14 @@ export const chartOptions = [
     label: 'Pie Chart',
     value: Charts.PieChart,
   },
+  {
+    label: 'XY Chart',
+    value: Charts.XYChart,
+  },
+  {
+    label: 'Radar Chart',
+    value: Charts.RadarChart,
+  },
 ];
 
 export const fieldNameOptions = [

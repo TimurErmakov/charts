@@ -19,4 +19,5 @@ export enum FieldNames {
 export enum Charts {
   PieChart = 'PieChart',
   XYChart = 'XYChart',
+  RadarChart = 'RadarChart',
 }

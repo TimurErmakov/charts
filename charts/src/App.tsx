@@ -1,4 +1,4 @@
-import { Container, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import React, { FC } from 'react';
 import { useSelector } from 'react-redux';
 import './App.css';
@@ -10,6 +10,11 @@ import { selectIsDataLoaded } from './store/selectors';
 const useStyles = makeStyles(() => ({
   container: {
     paddingTop: 80,
+    width: '90%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    margin: '0 auto',
   },
 }));
 
@@ -18,10 +23,10 @@ const App: FC = () => {
   const isDataLoaded = useSelector(selectIsDataLoaded);
 
   return isDataLoaded ? (
-    <Container className={classes.container} maxWidth="md">
+    <div className={classes.container}>
       <ControlPanel />
       <Charts />
-    </Container>
+    </div>
   ) : (
     <FileUploadZone />
   );
