@@ -8,16 +8,15 @@ import React, {
   ChangeEvent,
   useMemo,
   MouseEvent,
+  useEffect,
 } from 'react';
 import PublishIcon from '@material-ui/icons/Publish';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
 import { FieldNames } from '../../enums/dataset';
 import { setData, setIsDataLoaded } from '../../store/actions';
-
-type DataEntity = {
-  [key in FieldNames]: string;
-};
+import { useWebWorker } from '../../hooks/useWebWorker';
+import { parser } from '../../utils/parser';
 
 interface UseStylesProps {
   isDragEnter?: boolean;
@@ -89,6 +88,7 @@ const FileUploadZone: FC = () => {
   const [isDragEnter, setIsDragEnter] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const { result, run } = useWebWorker(parser);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -98,6 +98,15 @@ const FileUploadZone: FC = () => {
     }),
     [classes],
   );
+
+  useEffect(() => {
+    if (!result) {
+      return;
+    }
+
+    dispatch(setData(result));
+    dispatch(setIsDataLoaded(true));
+  }, [dispatch, result]);
 
   const clearFileInput = useCallback(() => {
     if (fileInputRef.current) {
@@ -173,30 +182,12 @@ const FileUploadZone: FC = () => {
         const text = e.target.result;
 
         const headers = Object.keys(FieldNames);
-        const data = text.split('\n').reduce((accArr: DataEntity[], record: string) => {
-          const values = record.split(/\s+/);
-          values.pop();
-
-          const dataObj: DataEntity = values.reduce(
-            (accObj, value: string, index: number) => ({
-              ...accObj,
-              [headers[index]]: value,
-            }),
-            {} as DataEntity,
-          );
-
-          accArr.push(dataObj);
-
-          return accArr;
-        }, []);
-
-        dispatch(setData(data.slice(0, 1000)));
-        dispatch(setIsDataLoaded(true));
+        run({ text, headers });
       };
 
       reader.readAsText(file);
     },
-    [file, dispatch],
+    [file, run],
   );
 
   const onPreventClick = (e: MouseEvent<HTMLDivElement>) => {
