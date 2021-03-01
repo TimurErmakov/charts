@@ -1,6 +1,5 @@
-import { Button, Card, Dialog, FormLabel, Typography } from '@material-ui/core';
+import { Button, Card, CircularProgress, Dialog, FormLabel, Typography } from '@material-ui/core';
 import React, {
-  DragEvent,
   FC,
   useState,
   useRef,
@@ -78,14 +77,18 @@ const useStyles = makeStyles(theme => ({
   fileName: {
     color: theme.palette.common.white,
   },
+  progress: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    margin: '-50px 0 0  -50px',
+  },
 }));
 
 const FileUploadZone: FC = () => {
   const classes = useStyles({});
   const dispatch = useDispatch();
 
-  const [open, setOpen] = useState(true);
-  const [isDragEnter, setIsDragEnter] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const { result, run } = useWebWorker(parser);
@@ -106,42 +109,14 @@ const FileUploadZone: FC = () => {
 
     dispatch(setData(result));
     dispatch(setIsDataLoaded(true));
+
+    setIsUploading(false);
   }, [dispatch, result]);
 
   const clearFileInput = useCallback(() => {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-  }, []);
-
-  const onDragEnter = useCallback((e: DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    setIsDragEnter(true);
-  }, []);
-
-  const onDragOver = useCallback((e: DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-  }, []);
-
-  const onDragLeaveHandler = useCallback((e: DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (e.target === e.currentTarget) {
-      setIsDragEnter(false);
-    }
-  }, []);
-
-  const onDropFile = useCallback((e: DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    setIsDragEnter(false);
-
-    const dt = e.dataTransfer;
   }, []);
 
   const onFileInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -179,7 +154,13 @@ const FileUploadZone: FC = () => {
       const reader = new FileReader();
 
       reader.onload = async (e: any) => {
-        const text = e.target.result;
+        const text = e.target?.result;
+
+        if (!text) {
+          return;
+        }
+
+        setIsUploading(true);
 
         const headers = Object.keys(FieldNames);
         run({ text, headers });
@@ -205,8 +186,12 @@ const FileUploadZone: FC = () => {
     );
   };
 
+  if (isUploading) {
+    return <CircularProgress size={100} className={classes.progress} />;
+  }
+
   return (
-    <Dialog classes={dialogClasses} open={open}>
+    <Dialog classes={dialogClasses} open>
       <input
         disabled={!!file}
         className={classes.fileInput}
@@ -221,10 +206,6 @@ const FileUploadZone: FC = () => {
         className={classes.label}
         data-test="file-upload-zone__dropzone"
         htmlFor="document-upload"
-        onDragEnter={onDragEnter}
-        onDragLeave={onDragLeaveHandler}
-        onDragOver={onDragOver}
-        onDrop={onDropFile}
       >
         {file && (
           <Card className={classes.fileCard} elevation={2} onClick={onPreventClick}>
