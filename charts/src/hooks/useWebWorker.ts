@@ -1,11 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-
-const workerHandler = (fn: (props: any) => any) => {
-  onmessage = (e: MessageEvent) => {
-    const result = fn(e.data);
-    (postMessage as any)(result);
-  };
-};
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import Worker from 'worker-loader!../workers/fileParser.worker';
 
 interface UseWebWorker<T, P> {
   result: T | null;
@@ -18,8 +13,7 @@ export const useWebWorker = <T, P>(fn: (props: P) => T): UseWebWorker<T, P> => {
   const workerRef = useRef<Worker | null>(null);
 
   useEffect(() => {
-    const blob = new Blob([`(${workerHandler})(${fn})`]);
-    const worker = new Worker(URL.createObjectURL(blob));
+    const worker = new Worker();
     workerRef.current = worker;
 
     worker.onmessage = e => setResult(e.data);
