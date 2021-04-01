@@ -1,55 +1,24 @@
-import { Button, FormControl, InputLabel, makeStyles, MenuItem, Select } from '@material-ui/core';
-import React, { ChangeEvent, FC, FormEvent, useCallback, useMemo, useState } from 'react';
+import { Button, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
+import React, { ChangeEvent, FC, FormEvent, useCallback, useState } from 'react';
 import { batch, useDispatch } from 'react-redux';
 import { chartOptions, fieldNameOptions } from '../../constants/options';
 import { Charts, FieldNames } from '../../enums/dataset';
 import { setChartType, setFieldName } from '../../store/actions';
-
-const useStyles = makeStyles(() => ({
-  container: {
-    paddingTop: 80,
-  },
-  selectContainer: {
-    display: 'flex',
-    marginBottom: 50,
-    justifyContent: 'center',
-  },
-  select: {
-    width: 300,
-    marginRight: 30,
-  },
-}));
+import { useStyles } from './ControlPanel.styles';
 
 const ControlPanel: FC = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const [currentFieldName, setCurrentFieldName] = useState('');
-  const [chart, setChart] = useState('');
+  const [chartData, setChartData] = useState({
+    fieldName: '',
+    chart: '',
+  });
 
-  const fieldNameLabel = useMemo(() => <InputLabel>OutlinedInput</InputLabel>, []);
-  const chartTypeLabel = useMemo(() => <InputLabel>OutlinedInput</InputLabel>, []);
-
-  const onChangeFieldName = useCallback(
-    (
-      e: ChangeEvent<{
-        name?: string | undefined;
-        value: unknown;
-      }>,
-    ) => {
-      setCurrentFieldName(e.target.value as FieldNames);
-    },
-    [],
-  );
-
-  const onChangeChart = useCallback(
-    (
-      e: ChangeEvent<{
-        name?: string | undefined;
-        value: unknown;
-      }>,
-    ) => {
-      setChart(e.target.value as Charts);
+  const onChange = useCallback(
+    ({ target }: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
+      const { name = '', value } = target;
+      setChartData(prevState => ({ ...prevState, [name]: value }));
     },
     [],
   );
@@ -57,13 +26,14 @@ const ControlPanel: FC = () => {
   const onSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      const { chart, fieldName } = chartData;
 
       batch(() => {
         dispatch(setChartType(chart as Charts));
-        dispatch(setFieldName(currentFieldName as FieldNames));
+        dispatch(setFieldName(fieldName as FieldNames));
       });
     },
-    [chart, currentFieldName, dispatch],
+    [chartData, dispatch],
   );
 
   return (
@@ -71,11 +41,10 @@ const ControlPanel: FC = () => {
       <FormControl required>
         <InputLabel>Field Name</InputLabel>
         <Select
-          value={currentFieldName}
+          value={chartData.fieldName}
           name="fieldName"
-          onChange={onChangeFieldName}
+          onChange={onChange}
           className={classes.select}
-          label={fieldNameLabel}
           displayEmpty
         >
           {fieldNameOptions.map(({ label, value }) => (
@@ -88,10 +57,9 @@ const ControlPanel: FC = () => {
       <FormControl required>
         <InputLabel>Chart Type</InputLabel>
         <Select
-          label={chartTypeLabel}
-          value={chart}
+          value={chartData.chart}
           name="chart"
-          onChange={onChangeChart}
+          onChange={onChange}
           className={classes.select}
           displayEmpty
         >

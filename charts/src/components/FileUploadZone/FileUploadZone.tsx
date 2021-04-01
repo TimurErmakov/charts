@@ -10,80 +10,12 @@ import React, {
   useEffect,
 } from 'react';
 import PublishIcon from '@material-ui/icons/Publish';
-import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
 import { FieldNames } from '../../enums/dataset';
 import { setData, setIsDataLoaded } from '../../store/actions';
 import { useWebWorker } from '../../hooks/useWebWorker';
 import { parser } from '../../utils/parser';
-
-interface UseStylesProps {
-  isDragEnter?: boolean;
-}
-
-const useStyles = makeStyles(theme => ({
-  dialogPaper: {
-    backgroundColor: theme.palette.background.default,
-    padding: '20px 30px',
-  },
-  fileInput: {
-    visibility: 'hidden',
-    '&:focus + label': {
-      border: `2px solid ${theme.palette.secondary.main}`,
-    },
-  },
-  label: {
-    position: 'relative',
-    minHeight: 160,
-    width: 400,
-    padding: '16px 16px 100px',
-    marginBottom: 24,
-    border: ({ isDragEnter }: UseStylesProps) =>
-      isDragEnter
-        ? `2px solid ${theme.palette.secondary.main}`
-        : `2px dashed ${theme.palette.divider}`,
-    borderRadius: 4,
-    '& > div': {
-      pointerEvents: ({ isDragEnter }: UseStylesProps) => (isDragEnter ? 'none' : 'auto'),
-    },
-  },
-  icon: {
-    fontSize: 40,
-  },
-  iconContainer: {
-    marginTop: 20,
-    textAlign: 'center',
-    margin: '0 auto',
-  },
-  buttonContainer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-  },
-  button: {
-    width: 100,
-    '&:not(:last-child)': {
-      marginRight: 15,
-    },
-  },
-  fileCard: {
-    display: 'flex',
-    alignItems: 'center',
-    height: 60,
-    backgroundColor: theme.palette.primary.main,
-  },
-  fileNameContainer: {
-    marginLeft: 20,
-  },
-  fileName: {
-    color: theme.palette.common.white,
-  },
-  progress: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    margin: '-50px 0 0  -50px',
-  },
-}));
+import { useStyles } from './FileUploadZone.styles';
 
 const FileUploadZone: FC = () => {
   const classes = useStyles({});
@@ -153,8 +85,8 @@ const FileUploadZone: FC = () => {
 
       const reader = new FileReader();
 
-      reader.onload = async (e: any) => {
-        const text = e.target?.result;
+      reader.onload = async (e: ProgressEvent<FileReader>) => {
+        const text = e.target?.result as string;
 
         if (!text) {
           return;
@@ -201,12 +133,7 @@ const FileUploadZone: FC = () => {
         type="file"
         onChange={onFileInputChange}
       />
-      <FormLabel
-        disabled={!!file}
-        className={classes.label}
-        data-test="file-upload-zone__dropzone"
-        htmlFor="document-upload"
-      >
+      <FormLabel disabled={!!file} className={classes.label} htmlFor="document-upload">
         {file && (
           <Card className={classes.fileCard} elevation={2} onClick={onPreventClick}>
             {renderFileCard(file.name)}
@@ -220,7 +147,6 @@ const FileUploadZone: FC = () => {
       <div className={classes.buttonContainer}>
         <Button
           className={classes.button}
-          data-test="file-upload-zone__browse-button"
           disabled={isUploading}
           size="small"
           variant="contained"
@@ -231,7 +157,6 @@ const FileUploadZone: FC = () => {
         <div>
           <Button
             className={classes.button}
-            data-test="file-upload-zone__clear-button"
             disabled={!file || isUploading}
             variant="contained"
             onClick={onClearClick}
@@ -241,7 +166,6 @@ const FileUploadZone: FC = () => {
           <Button
             className={classes.button}
             color="primary"
-            data-test="file-upload-zone__upload-button"
             disabled={!file || isUploading}
             type="button"
             variant="contained"

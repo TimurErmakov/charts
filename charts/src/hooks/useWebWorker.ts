@@ -16,7 +16,7 @@ export const useWebWorker = <T, P>(fn: (props: P) => T): UseWebWorker<T, P> => {
     const worker = new Worker();
     workerRef.current = worker;
 
-    worker.onmessage = e => setResult(e.data);
+    worker.onmessage = ({ data }) => setResult(data);
 
     return () => {
       worker.terminate();
