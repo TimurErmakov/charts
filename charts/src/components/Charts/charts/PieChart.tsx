@@ -1,44 +1,28 @@
-import React, { FC, useRef, useLayoutEffect } from 'react';
+import React, { FC, useRef, useCallback } from 'react';
 import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
 import am4themes_animated from '@amcharts/amcharts4/themes/animated';
-import { DataModel } from '../../../types/store';
-import { FieldNames } from '../../../enums/dataset';
-import { getData } from '../../../utils/dictionary';
 import { useStyles } from '../Chart.styles';
+import { useChart } from '../../../hooks/useChart';
+import { Amchart } from '../../../types/amcharts';
+import { ChartProps } from '../Chart.types';
 
 am4core.useTheme(am4themes_animated);
-
-interface ChartProps {
-  data: DataModel[];
-  fieldName: FieldNames;
-}
 
 const PieChart: FC<ChartProps> = ({ data, fieldName }) => {
   const classes = useStyles({});
   const chartRef = useRef<am4charts.PieChart | null>(null);
 
-  useLayoutEffect(() => {
-    if (!fieldName) {
-      return;
-    }
-
-    const chart = am4core.create('chartdiv', am4charts.PieChart);
-
-    const parsedData = getData(data, fieldName);
-
-    chart.data = parsedData;
-
-    const series = chart.series.push(new am4charts.PieSeries());
+  const callback = useCallback((chart: Amchart) => {
+    const pieChart = chart as am4charts.PieChart;
+    const series = pieChart.series.push(new am4charts.PieSeries());
     series.dataFields.value = 'value';
     series.dataFields.category = 'label';
 
-    chartRef.current = chart;
+    chartRef.current = pieChart;
+  }, []);
 
-    return () => {
-      chart.dispose();
-    };
-  }, [data, fieldName]);
+  useChart({ type: am4charts.PieChart, fieldName, data, callback });
 
   return <div id="chartdiv" className={classes.chart} />;
 };
